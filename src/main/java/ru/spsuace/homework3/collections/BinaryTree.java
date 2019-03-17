@@ -15,6 +15,27 @@ public class BinaryTree<K extends Comparable<K>, V> {
      * Находит элемент с заданным ключом и возвращает его. Если ключа нет, то мы возвращаем null
      */
     public V get(K key) {
+        if (key == null) {
+            throw new NullPointerException();
+        }
+
+        Node node = root;
+        int compare;
+
+        while (node != null) {
+            compare = key.compareTo(node.key);
+
+            if (compare == 0) {
+                return node.value;
+            }
+
+            if (compare > 0) {
+                node = node.right;
+            } else {
+                node = node.left;
+            }
+        }
+
         return null;
     }
 
@@ -65,9 +86,10 @@ public class BinaryTree<K extends Comparable<K>, V> {
             if (node.right == null) {
                 return null;
             }
-            node = node.left;
-            while (node.right != null) {
-                node = node.right;
+            node = node.right;
+
+            while (node.left != null) {
+                node = node.left;
             }
             return node;
         }
@@ -82,14 +104,29 @@ public class BinaryTree<K extends Comparable<K>, V> {
      * Удаляет элемент с заданным ключом и возвращает его. Если ключа нет, то мы возвращаем null
      */
     public V remove(K key) {
+
+
         Node node = root;
+        V temp = node.value;
+
         int compare;
+
+
+        if (key.compareTo(node.key) == 0 && size == 1) {
+            size--;
+            temp = root.value;
+            root = null;
+            return temp;
+        }
+
+
         do {
             compare = key.compareTo(node.key);
             if (compare == 0) {
-                V temp = node.value;
                 Node newNode = replacement(node);
+
                 if (newNode == null) {
+
                     if (node.key.compareTo(node.parent.key) < 0) {
                         node.parent.left = null;
                     } else {
@@ -97,8 +134,20 @@ public class BinaryTree<K extends Comparable<K>, V> {
                     }
 
                 } else {
-                    newNode.right = node.right;
-                    newNode.left = node.left;
+                    if (node.right != null) {
+
+
+                        if (newNode.key.compareTo(node.right.key) != 0) {
+                            newNode.right = node.right;
+                        }
+                    }
+                    if (node.left != null) {
+                        if (newNode.key.compareTo(node.left.key) != 0) {
+                            newNode.left = node.left;
+                        }
+                    }
+
+
                 }
 
                 size--;
