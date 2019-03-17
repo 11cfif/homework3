@@ -2,7 +2,6 @@ package ru.spsuace.homework3.collections;
 
 
 
-
 /**
  * Реализовать основные методы бинарного дерева поиска. Перебалансировку делать не нужно.
  * Считаем, что null не может быть в качестве ключа.
@@ -28,7 +27,6 @@ public class BinaryTree<K extends Comparable<K>, V> {
         Node node = root;
 
         if (node == null) {
-
             root = new Node(key, value, null);
             size++;
             return null;
@@ -38,8 +36,6 @@ public class BinaryTree<K extends Comparable<K>, V> {
         Node parent;
 
         do {
-
-            parent = node;
             compare = key.compareTo(node.key);
 
             if (compare == 0) {
@@ -47,13 +43,12 @@ public class BinaryTree<K extends Comparable<K>, V> {
                 node.value = value;
                 return temp;
             }
-
+            parent = node;
             if (compare > 0) {
                 node = node.right;
             } else {
                 node = node.left;
             }
-
 
         } while (node != null);
 
@@ -64,7 +59,6 @@ public class BinaryTree<K extends Comparable<K>, V> {
         } else {
             parent.left = newNode;
         }
-
         size++;
         return null;
     }
@@ -78,37 +72,50 @@ public class BinaryTree<K extends Comparable<K>, V> {
         if (node == null) {
             return null;
         }
+
         size--;
         V preValue = node.value;
 
+        if (node.left != null && node.right != null) {
+            Node heir = searchForHeir(node);
+            node.key = heir.key;
+            node.value = heir.value;
+            node = heir;
+        }
+
         Node replacement = (node.left != null ? node.left : node.right);
+        Node parent = node.parent;
 
         if (replacement != null) {
-            replacement.parent = node.parent;
+            replacement.parent = parent;
 
-            if (node.parent == null) {
+            if (parent == null) {
                 root = replacement;
-            } else if (node == node.parent.left) {
-                node.parent.left = replacement;
+            } else if (node == parent.left) {
+                parent.left = replacement;
             } else {
-                node.parent.right = replacement;
+                parent.right = replacement;
             }
-        } else if (node.parent == null) {
+        } else if (parent == null) {
             root = null;
         } else {
-
-            //if (node.parent != null) {
-                if (node == node.parent.left) {
-                    node.parent.left = null;
-                } else if (node == node.parent.right) {
-                    node.parent.right = null;
-                } else {
-                    node.parent = null;
-                }
-           // }
+            if (node == parent.left) {
+                parent.left = null;
+            } else if (node == parent.right) {
+                parent.right = null;
+            }
         }
 
         return preValue;
+    }
+
+    private Node searchForHeir(Node node) {
+
+        Node heir = node.right;
+        while (heir.left != null) {
+            heir = heir.left;
+        }
+        return heir;
     }
 
     /**
@@ -133,8 +140,9 @@ public class BinaryTree<K extends Comparable<K>, V> {
         }
     }
 
+
     private void rotateLeft(Node node) {
-        Node rightNode = node.right;
+        Node rightNode = node.right;/////////////////////
         node.right = rightNode.left;
 
         if (rightNode.left != null) {
@@ -157,6 +165,7 @@ public class BinaryTree<K extends Comparable<K>, V> {
 
     private void rotateRight(Node node) {
         Node leftNode = node.left;
+        node.left = leftNode.left;
 
         if (leftNode.right != null) {
             leftNode.right.parent = node;
@@ -198,18 +207,17 @@ public class BinaryTree<K extends Comparable<K>, V> {
                 node = node.left;
             }
         }
-
         return null;
     }
 
     private class Node {
-        K key;
-        V value;
-        Node left;
-        Node right;
-        Node parent;
+        private K key;
+        private V value;
+        private Node left;
+        private Node right;
+        private Node parent;
 
-        public Node(K key, V value, Node parent) {
+        Node(K key, V value, Node parent) {
             this.key = key;
             this.value = value;
             this.parent = parent;
