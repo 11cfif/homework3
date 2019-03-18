@@ -16,7 +16,11 @@ public class BinaryTree<K extends Comparable<K>, V> {
      * Находит элемент с заданным ключом и возвращает его. Если ключа нет, то мы возвращаем null
      */
     public V get(K key) {
-        return getNode(key).value;
+        Node node = getNode(key);
+        if (node != null) {
+            return node.value;
+        }
+        return null;
     }
 
     /**
@@ -140,9 +144,12 @@ public class BinaryTree<K extends Comparable<K>, V> {
         }
     }
 
-
     private void rotateLeft(Node node) {
-        Node rightNode = node.right;/////////////////////
+
+        if (node.right == null){
+            return;
+        }
+        Node rightNode = node.right;
         node.right = rightNode.left;
 
         if (rightNode.left != null) {
@@ -164,6 +171,10 @@ public class BinaryTree<K extends Comparable<K>, V> {
     }
 
     private void rotateRight(Node node) {
+
+        if (node.left == null) {
+            return;
+        }
         Node leftNode = node.left;
         node.left = leftNode.left;
 
