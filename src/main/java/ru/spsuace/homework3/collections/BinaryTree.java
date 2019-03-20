@@ -7,10 +7,8 @@ package ru.spsuace.homework3.collections;
  * В качестве дополнительного задания, надо реализовать поворот дерева.
  */
 public class BinaryTree<K extends Comparable<K>, V> {
-
     private int size = 0;
     private Node root;
-
     /**
      * Находит элемент с заданным ключом и возвращает его. Если ключа нет, то мы возвращаем null
      */
@@ -21,7 +19,6 @@ public class BinaryTree<K extends Comparable<K>, V> {
 
         Node node = root;
         int compare;
-
         while (node != null) {
             compare = key.compareTo(node.key);
 
@@ -35,7 +32,6 @@ public class BinaryTree<K extends Comparable<K>, V> {
                 node = node.left;
             }
         }
-
         return null;
     }
 
@@ -49,9 +45,11 @@ public class BinaryTree<K extends Comparable<K>, V> {
             size++;
             return null;
         }
+
         Node parent = root;
         Node node = parent;
         int compare;
+
         do {
             compare = key.compareTo(node.key);
             if (compare == 0) {
@@ -61,12 +59,17 @@ public class BinaryTree<K extends Comparable<K>, V> {
             }
 
             if (compare > 0) {
-                node = node.right;
+                node = parent.right;
+                if(parent.right!=null){
+                    parent=parent.right;
+                }
+
             } else {
-                node = node.left;
+                node=parent.left;
+                if (parent.left!=null){
+                    parent = parent.left;
+                }
             }
-
-
         } while (node != null);
 
         Node newNode = new Node(key, value, parent);
@@ -76,7 +79,6 @@ public class BinaryTree<K extends Comparable<K>, V> {
             parent.left = newNode;
         }
         size++;
-
         return null;
     }
 
@@ -107,51 +109,41 @@ public class BinaryTree<K extends Comparable<K>, V> {
 
 
         Node node = root;
-        V temp = node.value;
-
+        V temp;
         int compare;
 
-
-        if (key.compareTo(node.key) == 0 && size == 1) {
-            size--;
-            temp = root.value;
-            root = null;
-            return temp;
-        }
-
-
         do {
+            temp = node.value;
             compare = key.compareTo(node.key);
             if (compare == 0) {
                 Node newNode = replacement(node);
 
                 if (newNode == null) {
-
-                    if (node.key.compareTo(node.parent.key) < 0) {
-                        node.parent.left = null;
-                    } else {
-                        node.parent.right = null;
+                    if( node.parent.right==node){
+                        node.parent.right=null;
+                    }else{
+                        node.parent.left=null;
                     }
-
-                } else {
-                    if (node.right != null) {
-
-
-                        if (newNode.key.compareTo(node.right.key) != 0) {
-                            newNode.right = node.right;
-                        }
-                    }
-                    if (node.left != null) {
-                        if (newNode.key.compareTo(node.left.key) != 0) {
-                            newNode.left = node.left;
-                        }
-                    }
-
-
+                    size--;
+                    return temp;
                 }
+                if(newNode.right ==null && newNode.left==null){
+                    node.value = newNode.value;
+                    if( newNode.parent.right==newNode){
+                        newNode.parent.right=null;
+                    }else{
+                        newNode.parent.left=null;
+                    }
+                }else if(newNode.right ==null){
+                    newNode.parent.right=newNode.left;
+                    node.value = newNode.value;
 
+                }else{
+                    newNode.parent.left=newNode.right;
+                    node.value = newNode.value;
+                }
                 size--;
-                return node.value;
+                return temp;
             }
 
             if (compare > 0) {
@@ -159,10 +151,7 @@ public class BinaryTree<K extends Comparable<K>, V> {
             } else {
                 node = node.left;
             }
-
-
         } while (node != null);
-
 
         return null;
     }
@@ -188,35 +177,29 @@ public class BinaryTree<K extends Comparable<K>, V> {
             node.left = child.right;
             child.right = node;
         }
-
         if (node.key.compareTo(node.parent.key) < 0) {
             node.parent.left = child;
         } else {
             node.parent.right = child;
         }
         node.parent = child;
-
-
     }
 
     private class Node {
-        K key;
-        V value;
-        Node left;
-        Node right;
-        Node parent;
+        private K key;
+        private V value;
+        private Node left;
+        private Node right;
+        private Node parent;
 
         Node(K key, V value) {
             this.key = key;
             this.value = value;
         }
-
         Node(K key, V value, Node parent) {
             this.key = key;
             this.value = value;
             this.parent = parent;
         }
-
     }
-
 }
