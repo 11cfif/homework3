@@ -112,12 +112,17 @@ public class BinaryTree<K extends Comparable<K>, V> {
         V temp;
         int compare;
 
+
         do {
             temp = node.value;
             compare = key.compareTo(node.key);
-            if (compare == 0) {
-                Node newNode = replacement(node);
 
+            if (compare == 0) {
+                if (size==1){
+                    root=null;
+                    return temp;
+                }
+                Node newNode = replacement(node);
                 if (newNode == null) {
                     if( node.parent.right==node){
                         node.parent.right=null;
