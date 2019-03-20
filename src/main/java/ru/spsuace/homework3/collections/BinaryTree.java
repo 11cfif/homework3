@@ -9,6 +9,7 @@ package ru.spsuace.homework3.collections;
 public class BinaryTree<K extends Comparable<K>, V> {
     private int size = 0;
     private Node root;
+
     /**
      * Находит элемент с заданным ключом и возвращает его. Если ключа нет, то мы возвращаем null
      */
@@ -60,13 +61,13 @@ public class BinaryTree<K extends Comparable<K>, V> {
 
             if (compare > 0) {
                 node = parent.right;
-                if(parent.right!=null){
-                    parent=parent.right;
+                if (parent.right != null) {
+                    parent = parent.right;
                 }
 
             } else {
-                node=parent.left;
-                if (parent.left!=null){
+                node = parent.left;
+                if (parent.left != null) {
                     parent = parent.left;
                 }
             }
@@ -106,45 +107,47 @@ public class BinaryTree<K extends Comparable<K>, V> {
      * Удаляет элемент с заданным ключом и возвращает его. Если ключа нет, то мы возвращаем null
      */
     public V remove(K key) {
-
+        if (root == null) {
+            return null;
+        }
 
         Node node = root;
         V temp;
         int compare;
-
 
         do {
             temp = node.value;
             compare = key.compareTo(node.key);
 
             if (compare == 0) {
-                if (size==1){
-                    root=null;
+                if (size == 1) {
+                    root = null;
+                    size--;
                     return temp;
                 }
                 Node newNode = replacement(node);
                 if (newNode == null) {
-                    if( node.parent.right==node){
-                        node.parent.right=null;
-                    }else{
-                        node.parent.left=null;
+                    if (node.parent.right == node) {
+                        node.parent.right = null;
+                    } else {
+                        node.parent.left = null;
                     }
                     size--;
                     return temp;
                 }
-                if(newNode.right ==null && newNode.left==null){
+                if (newNode.right == null && newNode.left == null) {
                     node.value = newNode.value;
-                    if( newNode.parent.right==newNode){
-                        newNode.parent.right=null;
-                    }else{
-                        newNode.parent.left=null;
+                    if (newNode.parent.right == newNode) {
+                        newNode.parent.right = null;
+                    } else {
+                        newNode.parent.left = null;
                     }
-                }else if(newNode.right ==null){
-                    newNode.parent.right=newNode.left;
+                } else if (newNode.right == null) {
+                    newNode.parent.right = newNode.left;
                     node.value = newNode.value;
 
-                }else{
-                    newNode.parent.left=newNode.right;
+                } else {
+                    newNode.parent.left = newNode.right;
                     node.value = newNode.value;
                 }
                 size--;
@@ -174,10 +177,16 @@ public class BinaryTree<K extends Comparable<K>, V> {
     public void rotation(boolean isLeftRotation, Node node) {
         Node child;
         if (isLeftRotation) {
+            if (node.right == null) {
+                return;
+            }
             child = node.right;
             node.right = child.left;
             child.left = node;
         } else {
+            if (node.left == null) {
+                return;
+            }
             child = node.left;
             node.left = child.right;
             child.right = node;
@@ -201,6 +210,7 @@ public class BinaryTree<K extends Comparable<K>, V> {
             this.key = key;
             this.value = value;
         }
+
         Node(K key, V value, Node parent) {
             this.key = key;
             this.value = value;
