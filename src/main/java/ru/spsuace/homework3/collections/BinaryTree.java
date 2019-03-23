@@ -5,7 +5,6 @@ package ru.spsuace.homework3.collections;
  * Реализовать основные методы бинарного дерева поиска. Перебалансировку делать не нужно.
  * Считаем, что null не может быть в качестве ключа.
  * В качестве дополнительного задания, надо реализовать поворот дерева.
- *
  */
 public class BinaryTree<K extends Comparable<K>, V> {
 
@@ -17,36 +16,12 @@ public class BinaryTree<K extends Comparable<K>, V> {
      */
     public V get(K key) {
 
-        if (root == null){
-           return null;
+        if (key == null) {
+            return null;
         }
 
-        Node current = root;
-
-        for ( ; ; ) {
-
-            int compareResult = key.compareTo(current.key);
-            if (compareResult > 0){
-
-                if (current.rightChild == null){
-                    return null;
-                } else {
-                    current = current.rightChild;
-                }
-
-            } else if (compareResult < 0){
-
-                if (current.leftChild == null){
-                    return null;
-                } else {
-                    current = current.leftChild;
-                }
-
-            } else {
-                return current.value;
-            }
-
-        }
+        Node current = findElement(key);
+        return (current != null) ? current.value : null;
     }
 
     /**
@@ -55,45 +30,31 @@ public class BinaryTree<K extends Comparable<K>, V> {
      */
     public V put(K key, V value) {
 
-        if (root == null){
-        root = new Node(key, value);
-        count++;
+        if (key == null) {
+            return null;
         }
 
-        Node current = root;
+        Node current = findElement(key, true);
 
-        for ( ; ; ) {
+        if (current == null) {
+            root = new Node(key, value, null);
+            count++;
+            return null;
+        }
 
-            int compareResult = key.compareTo(current.key);
-            if (compareResult > 0){
-
-                if (current.rightChild == null){
-                    current.rightChild = new Node(key, value);
-                    current.rightChild.parent = current;
-                    count++;
-                    return null;
-                } else {
-                    current = current.rightChild;
-                }
-
-            } else if (compareResult < 0){
-
-                if (current.leftChild == null){
-                    current.leftChild = new Node(key, value);
-                    current.leftChild.parent = current;
-                    count++;
-                    return null;
-                } else {
-                    current = current.leftChild;
-                }
-
-            } else {
-
-                V previousValue = current.value;
-                current.value = value;
-                return previousValue;
-            }
-
+        int compareResult = key.compareTo(current.key);
+        if (compareResult > 0) {
+            current.rightChild = new Node(key, value, current);
+            count++;
+            return null;
+        } else if (compareResult < 0) {
+            current.leftChild = new Node(key, value, current);
+            count++;
+            return null;
+        } else {
+            V previousValue = current.value;
+            current.value = value;
+            return previousValue;
         }
     }
 
@@ -102,92 +63,72 @@ public class BinaryTree<K extends Comparable<K>, V> {
      */
     public V remove(K key) {
 
-        if (root == null){
+        if (key == null) {
             return null;
         }
 
-        Node current = root;
+        Node current = findElement(key);
 
-        for ( ; ; ) {
+        if (current == null) {
+            return null;
+        }
 
-            int compareResult = key.compareTo(current.key);
-            if (compareResult > 0){
+        V removedValue = current.value;
 
-                if (current.rightChild == null){
-                    return null;
-                } else {
-                    current = current.rightChild;
-                }
-
-            } else if (compareResult < 0){
-
-                if (current.leftChild == null){
-                    return null;
-                } else {
-                    current = current.leftChild;
-                }
-
-            } else {
-
-                V removedValue = current.value;
-
-                if (current.parent.leftChild == current){
-                    if (current.rightChild == null && current.leftChild == null) {
-                        current.parent.leftChild = null;
-                        count--;
-                        return removedValue;
-                    }
-                    if (current.rightChild == null) {
-                        current.parent.leftChild = current.leftChild;
-                        current.leftChild.parent = current.parent;
-                        count--;
-                        return removedValue;
-                    }
-                    if (current.leftChild == null) {
-                        current.parent.leftChild = current.rightChild;
-                        current.rightChild.parent = current.parent;
-                        count--;
-                        return removedValue;
-                    }
-                } else {
-                    if (current.rightChild == null && current.leftChild == null){
-                        current.parent.rightChild = null;
-                        count--;
-                        return removedValue;
-                    }
-                    if (current.rightChild == null) {
-                        current.parent.rightChild = current.leftChild;
-                        current.leftChild.parent = current.parent;
-                        count--;
-                        return removedValue;
-                    }
-                    if (current.leftChild == null) {
-                        current.parent.rightChild = current.rightChild;
-                        current.rightChild.parent = current.parent;
-                        count--;
-                        return removedValue;
-                    }
-                }
-
-                Node closestToKeyChild = current.rightChild;
-
-                while (closestToKeyChild.leftChild != null) {
-                    closestToKeyChild = closestToKeyChild.leftChild;
-                }
-
-                if (closestToKeyChild.parent.leftChild == closestToKeyChild){
-                    closestToKeyChild.parent.leftChild = closestToKeyChild.rightChild;
-                } else {
-                    closestToKeyChild.parent.rightChild = closestToKeyChild.rightChild;
-                }
-                current.key = closestToKeyChild.key;
-                current.value = closestToKeyChild.value;
+        if (current.parent.leftChild == current) {
+            if (current.rightChild == null && current.leftChild == null) {
+                current.parent.leftChild = null;
                 count--;
-
                 return removedValue;
             }
-
+            if (current.rightChild == null) {
+                current.parent.leftChild = current.leftChild;
+                current.leftChild.parent = current.parent;
+                count--;
+                return removedValue;
+            }
+            if (current.leftChild == null) {
+                current.parent.leftChild = current.rightChild;
+                current.rightChild.parent = current.parent;
+                count--;
+                return removedValue;
+            }
+        } else {
+            if (current.rightChild == null && current.leftChild == null) {
+                current.parent.rightChild = null;
+                count--;
+                return removedValue;
+            }
+            if (current.rightChild == null) {
+                current.parent.rightChild = current.leftChild;
+                current.leftChild.parent = current.parent;
+                count--;
+                return removedValue;
+            }
+            if (current.leftChild == null) {
+                current.parent.rightChild = current.rightChild;
+                current.rightChild.parent = current.parent;
+                count--;
+                return removedValue;
+            }
         }
+
+        Node closestToKeyChild = current.rightChild;
+
+        while (closestToKeyChild.leftChild != null) {
+            closestToKeyChild = closestToKeyChild.leftChild;
+        }
+
+        if (closestToKeyChild.parent.leftChild == closestToKeyChild) {
+            closestToKeyChild.parent.leftChild = closestToKeyChild.rightChild;
+        } else {
+            closestToKeyChild.parent.rightChild = closestToKeyChild.rightChild;
+        }
+        current.key = closestToKeyChild.key;
+        current.value = closestToKeyChild.value;
+        count--;
+
+        return removedValue;
     }
 
     /**
@@ -203,60 +144,105 @@ public class BinaryTree<K extends Comparable<K>, V> {
      */
     public void rotation(boolean isLeftRotation, Node node) {
 
-        if (isLeftRotation){
-            if (node.rightChild == null){
+        if (node == null) {
+            return;
+        }
+
+        if (isLeftRotation) {
+            if (node.rightChild == null) {
                 return;
             }
 
-            if (node.rightChild.leftChild == null){
-                node.rightChild.parent = node.parent;
-                node.parent = node.rightChild;
-                node.rightChild.leftChild = node;
-                node.rightChild = null;
-            }else{
-                Node temp = node.rightChild.leftChild;
+            Node temp = node.rightChild.leftChild;
 
-                node.rightChild.parent = node.parent;
-                node.parent = node.rightChild;
-                node.rightChild.leftChild = node;
-                node.rightChild = temp;
+            if (node.parent != null) {
+                if (node.parent.leftChild == node) {
+                    node.parent.leftChild = node.rightChild;
+                } else {
+                    node.parent.rightChild = node.rightChild;
+                }
+            }
+            node.rightChild.parent = node.parent;
+            node.parent = node.rightChild;
+            node.rightChild.leftChild = node;
+            node.rightChild = temp;
+            if (temp != null) {
                 temp.parent = node;
             }
 
-        }else{
-            if (node.leftChild == null){
+        } else {
+            if (node.leftChild == null) {
                 return;
             }
 
-            if (node.leftChild.rightChild == null){
-                node.leftChild.parent = node.parent;
-                node.parent = node.leftChild;
-                node.leftChild.rightChild = node;
-                node.leftChild = null;
-            }else{
-                Node temp = node.leftChild.rightChild;
+            Node temp = node.leftChild.rightChild;
 
-                node.leftChild.parent = node.parent;
-                node.parent = node.leftChild;
-                node.leftChild.rightChild = node;
-                node.leftChild = temp;
+            if (node.parent != null) {
+                if (node.parent.leftChild == node) {
+                    node.parent.leftChild = node.leftChild;
+                } else {
+                    node.parent.rightChild = node.leftChild;
+                }
+            }
+            node.leftChild.parent = node.parent;
+            node.parent = node.leftChild;
+            node.leftChild.rightChild = node;
+            node.leftChild = temp;
+            if (temp != null) {
                 temp.parent = node;
+            }
+        }
+    }
+
+    private Node findElement(K key) {
+        return findElement(key, false);
+    }
+
+    private Node findElement(K key, boolean isForPut) {
+
+        if (root == null) {
+            return null;
+        }
+
+        Node current = root;
+
+        for ( ; ; ) {
+
+            int compareResult = key.compareTo(current.key);
+            if (compareResult > 0) {
+
+                if (current.rightChild == null) {
+                    return (isForPut) ? current : null;
+                } else {
+                    current = current.rightChild;
+                }
+
+            } else if (compareResult < 0) {
+
+                if (current.leftChild == null) {
+                    return (isForPut) ? current : null;
+                } else {
+                    current = current.leftChild;
+                }
+
+            } else {
+                return current;
             }
         }
     }
 
     private class Node {
 
-        K key;
-        V value;
-        Node parent;
-        Node leftChild;
-        Node rightChild;
+        private K key;
+        private V value;
+        private Node parent;
+        private Node leftChild;
+        private Node rightChild;
 
-        Node(K key, V value){
+        Node(K key, V value, Node parent) {
             this.key = key;
             this.value = value;
+            this.parent = parent;
         }
     }
-
 }
