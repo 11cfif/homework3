@@ -57,12 +57,12 @@ public class BinaryTree<K extends Comparable<K>, V> {
                 return temp;
             } else if (comparison > 0) {
                 current = parent.right;
-                if (parent.right != null) {
+                if (current != null) {
                     parent = parent.right;
                 }
             } else {
                 current = parent.left;
-                if (parent.left != null) {
+                if (current != null) {
                     parent = parent.left;
                 }
             }
@@ -169,7 +169,33 @@ public class BinaryTree<K extends Comparable<K>, V> {
      * Выполняем левый или правый поворот относительно заданного узла
      */
     public void rotation(boolean isRightRotation, Node current) {
+        if (current == null) {
+            return;
+        }
 
+        Node temp;
+
+        if (!isRightRotation) {
+            if (current.right == null) {
+                return;
+            }
+            temp = current.right;
+            current.right = temp.left;
+            temp.left = current;
+        } else {
+            if (current.left == null) {
+                return;
+            }
+            temp = current.left;
+            current.left = temp.right;
+            temp.right = current;
+        }
+        if (current.key.compareTo(current.parent.key) < 0) {
+            current.parent.left = temp;
+        } else {
+            current.parent.right = temp;
+        }
+        current.parent = temp;
     }
 
     private class Node {
