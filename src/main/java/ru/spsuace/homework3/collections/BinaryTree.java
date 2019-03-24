@@ -162,6 +162,9 @@ public class BinaryTree<K extends Comparable<K>, V> {
      * Выполняем левый или правый поворот относительно заданного узла
      */
     public void rotation(boolean isLeftRotation, Node node) {
+        if (node == null) {
+            return;
+        }
         Node temp;
         if (isLeftRotation) {
             if (node.right == null) {
