@@ -124,6 +124,9 @@ public class BinaryTree<K extends Comparable<K>, V> {
         } else {
             closestToKeyChild.parent.rightChild = closestToKeyChild.rightChild;
         }
+        if (closestToKeyChild.rightChild != null) {
+            closestToKeyChild.rightChild.parent = closestToKeyChild.parent;
+        }
         current.key = closestToKeyChild.key;
         current.value = closestToKeyChild.value;
         count--;
