@@ -111,48 +111,49 @@ public class BinaryTree<K extends Comparable<K>, V> {
      * Выполняем левый или правый поворот относительно заданного узла
      */
     public void rotation(boolean isLeftRotation, Node node) {
-        if (node != null) {
-            //left rotate
-            if (isLeftRotation) {
-                if (node.rightBranch == null) {
-                    return;
-                }
-                Node rightNode = node.rightBranch;
-                node.rightBranch = rightNode.leftBranch;
-                if (rightNode.leftBranch != null) {
-                    rightNode.leftBranch.split = node;
-                }
-                rightNode.split = node.split;
-                if (node.split == null) {
-                    root = rightNode;
-                } else if (node.split.leftBranch == node) {
-                    node.split.leftBranch = rightNode;
-                } else {
-                    node.split.rightBranch = rightNode;
-                }
-                rightNode.leftBranch = node;
-                node.split = rightNode;
-                //right rotate
-            } else {
-                if (node.leftBranch == null) {
-                    return;
-                }
-                Node leftNode = node.leftBranch;
-                node.leftBranch = leftNode.leftBranch;
-                if (leftNode.rightBranch != null) {
-                    leftNode.rightBranch.split = node;
-                }
-                leftNode.split = node.split;
-                if (node.split == null) {
-                    root = leftNode;
-                } else if (node.split.rightBranch == node) {
-                    node.split.rightBranch = leftNode;
-                } else {
-                    node.split.rightBranch = leftNode;
-                }
-                leftNode.rightBranch = node;
-                node.split = leftNode;
+        if (node == null) {
+            return;
+        }
+        //left rotate
+        if (isLeftRotation) {
+            if (node.rightBranch == null) {
+                return;
             }
+            Node rightNode = node.rightBranch;
+            node.rightBranch = rightNode.leftBranch;
+            if (rightNode.leftBranch != null) {
+                rightNode.leftBranch.split = node;
+            }
+            rightNode.split = node.split;
+            if (node.split == null) {
+                root = rightNode;
+            } else if (node.split.leftBranch == node) {
+                node.split.leftBranch = rightNode;
+            } else {
+                node.split.rightBranch = rightNode;
+            }
+            rightNode.leftBranch = node;
+            node.split = rightNode;
+            //right rotate
+        } else {
+            if (node.leftBranch == null) {
+                return;
+            }
+            Node leftNode = node.leftBranch;
+            node.leftBranch = leftNode.leftBranch;
+            if (leftNode.rightBranch != null) {
+                leftNode.rightBranch.split = node;
+            }
+            leftNode.split = node.split;
+            if (node.split == null) {
+                root = leftNode;
+            } else if (node.split.rightBranch == node) {
+                node.split.rightBranch = leftNode;
+            } else {
+                node.split.rightBranch = leftNode;
+            }
+            leftNode.rightBranch = node;
+            node.split = leftNode;
         }
     }
 
