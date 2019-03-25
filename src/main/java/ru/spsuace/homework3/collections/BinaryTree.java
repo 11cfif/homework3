@@ -133,10 +133,12 @@ public class BinaryTree<K extends Comparable<K>, V> {
                     }
                 } else if (node.right == null) {
                     node.parent.right = node.left;
+                    node.left.parent=node.parent;
                     temp.value = node.value;
 
                 } else {
                     node.parent.left = node.right;
+                    node.right.parent=node.parent;
                     temp.value = node.value;
                 }
                 high--;
