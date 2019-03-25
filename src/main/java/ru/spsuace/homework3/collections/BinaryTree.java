@@ -8,17 +8,23 @@ package ru.spsuace.homework3.collections;
  */
 public class BinaryTree<K extends Comparable<K>, V> {
 
-    int counter = 0; //Подумать про начальные данные
-    Node root; //Корень
+    private int counter = 0; //Подумать про начальные данные
+    private Node root; //Корень
 
     /**
      * Находит элемент с заданным ключом и возвращает его. Если ключа нет, то мы возвращаем null
      */
     public V get(K key) {
-        if (find(key, root) == null) {
+        if (root != null){
+            Node find = find(key, root);
+            if (find == null) {
+                return null;
+            }
+            return find.value;
+        }else {
             return null;
         }
-        return find(key, root).value;
+
     }
 
     public Node find(K key, Node temp) {
@@ -36,10 +42,10 @@ public class BinaryTree<K extends Comparable<K>, V> {
         }
         if (temp.key.compareTo(key) < 0) {
 
-            if (temp.rigth == null) {
+            if (temp.right == null) {
                 return null;
             } else {
-                resultFind = find(key, temp.rigth);
+                resultFind = find(key, temp.right);
             }
         }
         return resultFind;
@@ -78,12 +84,12 @@ public class BinaryTree<K extends Comparable<K>, V> {
             return value;
         }
         if (temp.key.compareTo(key) < 0) {
-            if (temp.rigth == null) {
-                temp.rigth = new Node(key, value, temp);
+            if (temp.right == null) {
+                temp.right = new Node(key, value, temp);
                 counter++;
                 return null;
             } else {
-                add(key, value, temp.rigth);
+                add(key, value, temp.right);
             }
         }
         return null;
@@ -99,57 +105,60 @@ public class BinaryTree<K extends Comparable<K>, V> {
         }
         counter--;
         //1 вариант (последний элемент дерева, без детей)
-        if (result.rigth == null && result.left == null) {
+        if (result.right == null && result.left == null) {
             if (result.parent.left == null) {
-                result.parent.rigth = null;
+                result.parent.right = null;
                 return result.value;
             }
-            if (result.parent.rigth == null) {
+            if (result.parent.right == null) {
                 result.parent.left = null;
                 return result.value;
             }
             if (result.parent.left.key.compareTo(result.key) == 0) { //Строка обозначает (ничего лучше пока не придумал) Что мы идет к родителю и проверяем их детей слева (сначала), если ключ совпадает с необходимым, то обнуляем ссылку на него
                 result.parent.left = null;
             } else {
-                result.parent.rigth = null;
+                result.parent.right = null;
             }
             return result.value;
         }
         //2 вариант (с одним ребенком (слева или справа))
-        if (result.rigth == null && result.left != null) {
+        if (result.right == null && result.left != null) {
             if (result.parent.left.key.compareTo(result.key) == 0) {
                 result.parent.left = result.left;
             } else {
-                result.parent.rigth = result.left;
+                result.parent.right = result.left;
+                //result
             }
+            result.left.parent = result.parent;
             return result.value; //вывод
         }
-        if (result.rigth != null && result.left == null) {
+        if (result.right != null && result.left == null) {
             if (result.parent.left.key.compareTo(result.key) == 0) {
-                result.parent.left = result.rigth;
+                result.parent.left = result.right;
             } else {
-                result.parent.rigth = result.rigth;
+                result.parent.right = result.right;
             }
+            result.right.parent = result.parent;
             return result.value; //вывод
         }
         //3 вариант (присутствуют оба ребенка)
         Node nodeMax = result.left;
         for (;;) { //бесконечный цикл для поиска максимального элемента из минимальной ветки
-            if (nodeMax.rigth == null) {
+            if (nodeMax.right == null) {
                 break;
             } else {
-                nodeMax = nodeMax.rigth;
+                nodeMax = nodeMax.right;
             }
         }
         //Элемент найден (теперь необходимо изменить ссылки)
-        Node temp = new Node(result.key, result.value); // для вывода
+        V valueM = result.value; //Для вывода
         result.key = nodeMax.key;
         result.value = nodeMax.value;
-        nodeMax.parent.rigth = nodeMax.left;
+        nodeMax.parent.right = nodeMax.left;
         if (nodeMax.left != null) {
             nodeMax.left.parent = nodeMax.parent;
         }
-        return temp.value;
+        return valueM;
     }
     /**
      * Возвращаем размер дерева
@@ -169,15 +178,15 @@ public class BinaryTree<K extends Comparable<K>, V> {
         private K key;
         private V value;
         private Node left; // left и right — ссылки на узлы, являющиеся детьми данного узла
-        private Node rigth;
+        private Node right;
         private Node parent; //Cсылка на родительский элемент
 
-        public Node(K key, V value) { //конструктор для первого элемента
+        Node(K key, V value) { //конструктор для первого элемента
             this.key = key;
             this.value = value;
         }
 
-        public Node(K key, V value, Node parent) { //конструктор для n>1 элемента
+        Node(K key, V value, Node parent) { //конструктор для n>1 элемента
             //подумать
             this.key = key;
             this.value = value;
